@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<import resource="globalSetting.xml" />
+	<!-- 监听赛事表格 -->
+
+	<bean id="matchTable" class="org.pl.sports.tools.ui.MatchTable">
+		<constructor-arg name="dataModel">
+			<bean class="org.pl.sports.tools.entity.MatchTableModel"></bean>
+		</constructor-arg>
+	</bean>
+	<bean id="jscrollPane" class="org.pl.sports.tools.ui.MyJScrollPane">
+		<constructor-arg name="view" ref="matchTable"></constructor-arg>
+	</bean>
+	<bean name="scan" class="org.pl.sports.tools.ui.ScanManager" >
+		<constructor-arg name="matchTable" ref="matchTable"></constructor-arg>
+	</bean>
+	<!-- 主窗体 -->
+	<bean id="mainFrame" class="org.pl.sports.tools.ui.MainFrame"
+		init-method="init">
+		<property name="visible" value="true" />
+		<property name="title" value="体育扫描" />
+		<property name="menubar" ref="mainmenu"></property>
+		<property name="scrollPane" ref="jscrollPane"></property>
+		<property name="matchTable" ref="matchTable"></property>
+		<property name="components">
+			<map>
+				<entry key="mainmenu" value-ref="mainmenu" />
+				<entry key="jscrollPane" value-ref="jscrollPane" />
+				<entry key="matchTable" value-ref="matchTable" />
+			</map>
+		</property>
+	</bean>
+
+</beans>

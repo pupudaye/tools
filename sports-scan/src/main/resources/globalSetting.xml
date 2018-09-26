@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 全局配置 -->
+	<!-- 全局配置参数 -->
+	<bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    	<property name="locations" value="classpath:global.properties"/>
+	</bean>
+	<bean id="globalConfigFactory" class="org.pl.sports.tools.entity.GlobalConfigFactory" factory-method="getInstance">
+		<constructor-arg name="phone" value="${global.setting.phone}"></constructor-arg>
+		<constructor-arg name="intervalTime" value="${global.setting.intervalTime}"></constructor-arg>
+		<constructor-arg name="syncSwitch" value="${global.setting.syncSwitch}"></constructor-arg>
+		<property name="filename" value="global.properties"></property>
+	</bean> 
+	<!-- 电话 -->
+	<bean id="phoneComponent" class="org.pl.sports.tools.ui.LableForComponent">
+		<property name="lable">
+			<bean class="javax.swing.JLabel">
+				<property name="name" value="phoneLable"></property>
+				<property name="text" value="接收手机:"></property>
+				<property name="horizontalAlignment" value="4"></property>
+			</bean>
+		</property>
+		<property name="component">
+			<bean class="javax.swing.JTextField">
+				<constructor-arg type="int" value="20"></constructor-arg>
+				<property name="name" value="phone"></property>
+				<property name="text" value="${global.setting.phone}"></property>
+			</bean>
+		</property>
+	</bean>
+    <!-- 间隔时间 -->
+	<bean id="syncIntervalTimeComponent" class="org.pl.sports.tools.ui.LableForComponent">
+		<property name="lable">
+			<bean class="javax.swing.JLabel">
+				<property name="name" value="syncIntervalTimeLable"></property>
+				<property name="text" value="监听间隔时间(S):"></property>
+				<property name="horizontalAlignment" value="4"></property>
+			</bean>
+		</property>
+		<property name="component">
+			<bean class="javax.swing.JTextField">
+				<constructor-arg type="int" value="20"></constructor-arg>
+				<property name="name" value="intervalTime"></property>
+				<property name="text" value="${global.setting.intervalTime}"></property>
+			</bean>
+		</property>
+	</bean>
+
+	<!-- 同步开关 -->
+	<bean id="syncSwitchComponent" class="org.pl.sports.tools.ui.LableForComponent">
+		<property name="lable">
+			<bean class="javax.swing.JLabel">
+				<property name="name" value="syncSwitchTimeLable"></property>
+				<property name="text" value="是否开启扫描:"></property>
+				<property name="horizontalAlignment" value="4"></property>
+			</bean>
+		</property>
+		<property name="component">
+			<bean class="org.pl.sports.tools.ui.MyJComboBox">
+				<property name="comboBoxItems">
+					<list>
+						<bean class="org.pl.sports.tools.entity.ComboBoxItem">
+							<property name="key" value="启动"></property>
+							<property name="value" value="0"></property>
+						</bean>
+						<bean class="org.pl.sports.tools.entity.ComboBoxItem">
+							<property name="key" value="关闭"></property>
+							<property name="value" value="1"></property>
+						</bean>
+					</list>
+				</property>
+				<property name="name" value="syncSwitch"></property>
+				<property name="selectedIndex" value="${global.setting.syncSwitch}"/>
+			</bean>
+		</property>
+	</bean>
+	<!--全局配置UI  -->
+	<bean id="goSetting" class="org.pl.sports.tools.ui.GlobalConfigUI" scope="prototype">
+		<property name="configItems">
+			<map>
+				<entry key="phoneField" value-ref="phoneComponent"></entry>
+				<entry key="syncIntervalTimeField" value-ref="syncIntervalTimeComponent"></entry>
+				<entry key="syncSwitchField" value-ref="syncSwitchComponent"></entry>
+			</map>
+		</property>
+		<property name="configFactory" ref="globalConfigFactory"></property>
+	</bean>
+	<!-- 菜单配置 -->
+	<bean id="configFactory" class="org.pl.sports.tools.entity.ConfigFactory" />
+	<bean id="menusData" class="java.util.List" factory-bean="configFactory"
+		factory-method="loadMenu">
+		<constructor-arg name="path" value="menu.json"></constructor-arg>
+	</bean>
+	
+	<!-- 菜单组件 -->
+	<bean id="mainmenu" class="org.pl.sports.tools.ui.MyMenuBar">
+		<property name="menus" ref="menusData"></property>
+		<property name="command">
+			<map>
+				<entry key="goSetting" value-ref="goSetting"></entry>
+				<entry key="scan" value-ref="scan"></entry>
+			</map>
+		</property>
+	</bean>
+</beans>
